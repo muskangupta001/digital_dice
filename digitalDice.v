@@ -33,12 +33,31 @@ module dice_number(
     end
 endmodule
 
+module seven_seg_decoder(
+    input [2:0] dice_out,
+    output reg [6:0] seg
+);
+    always @(*) begin
+        case(dice_out)
+            3'd1: seg = 7'b0000110;
+            3'd2: seg = 7'b1011011;
+            3'd3: seg = 7'b1001111;
+            3'd4: seg = 7'b1100110;
+            3'd5: seg = 7'b1101101;
+            3'd6: seg = 7'b1111101;
+            default: seg = 7'b0000001;  // Blank/default
+        endcase
+    end
+endmodule
+
+
 // Top-level Module without 7-segment, outputs only dice number
 module digital_dice_top(
     input clk, 
     input reset,
     input btn,          // New button input
-    output reg [2:0] dice_out
+    output reg [2:0] dice_out,
+    output [6:0] seg
 );
     wire [2:0] rand_num;
     reg [2:0] dice_temp;
@@ -62,6 +81,11 @@ module digital_dice_top(
         else
             dice_out <= dice_out;   // Hold previous value
     end
+
+      seven_seg_decoder segdec(
+          .dice_out(dice_out),
+          .seg(seg)
+      );
 
 endmodule
 
